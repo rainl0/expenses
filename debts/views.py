@@ -1,3 +1,4 @@
+import datetime
 from django.shortcuts import redirect, render
 from django.http import HttpResponse
 from django.template import loader
@@ -22,23 +23,28 @@ def register_request(request):
 		form = NewUserForm(request.POST)
 		if form.is_valid():
 			user = form.save()
+			user.save()
 			login(request, user)
 			messages.success(request, "Registration successful." )
 			return redirect("/")
 		messages.error(request, "Unsuccessful registration. Invalid information.")
 	form = NewUserForm()
-	return render(request=request, template_name="registration/register.html", context={"form":form})
+	message = messages.get_messages(request)
+	return render(request=request, template_name="registration/register.html", context={"form":form, "messages": message})
 
 @login_required
 def accountView(request):
 	if request.method == "post":
-		while True:
-			form = PaymentForm(request.POST)
+		form = PaymentForm(request.POST)
+		if form.is_valid():
 			users = get_user_model().objects.values_list('username')
 			if form.payee not in users:
 				messages.error(request, "Please enter a valid username (it's case sensitive!)")
-				continue
-			break
+			payment = form.save(commit=False)
+			payment.payer = request.user.username
+			payment.date = datetime.datetime.now()
+			payment.save()
+			messages.success(request, "Success!")
 	
 	form = PaymentForm()
 	model = Money
@@ -47,7 +53,7 @@ def accountView(request):
 	i = 0
 	got = 0
 	owed = 0
-	for payer, payee in list(zip(model.objects.values_list('payer'))):
+	for payer, payee in list(zip(model.objects.values_list('payer'), model.objects.values_list('payee'))):
 		if payer == request.user.username:
 			owed += model.objects.values_list('sum')[i]
 		if payee == request.user.username:
@@ -55,3 +61,4 @@ def accountView(request):
 		i += 1
 	net = got - owed
 	
+	return render(request, "account.html", {"got": got, "owed": owed, "net": net, "form": form})

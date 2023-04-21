@@ -2,7 +2,20 @@
 <html>
 <body>
 
+<button onclick="location.href='/'">Main</button>
+<button onclick="location.href='/accounts/logout/'">Log out</button>
 
-    
+<h2>Account overview</h2>
+    <p>You owe a total of {{ owed }}</p>
+    <p>Others owe you {{ got }}</p>
+    <p>Net: {{ net }}</p>
+
+<h2>Add payment</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Confirm</button>
+    </form>
+
 </body>
 </html>
