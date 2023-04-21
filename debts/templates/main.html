@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+    table, th, td {
+        border: 1px solid black;
+        border-collapse: collapse;
+    }
+    </style>
+</head>
+
+<body>
+
+{% if user.is_authenticated %}
+    <p>Hi {{ user.username }}!</p>
+    <button onclick="location.href='account/'">Account</button>
+    <button onclick="location.href='/accounts/logout/'">Log out</button>
+{% else %}
+    <p>Hello! Please log in to use this app</p>
+    <button onclick="location.href='/accounts/login/'" type="button">Log in</button>
+{% endif %}
+<br>
+
+<button onclick="location.href='/admin/'" type="button">Admin</button>
+
+    <table>
+        <thead>
+        {% for head in field_names %}
+           <th>{{ head }}</th>
+        {% endfor %}
+        </thead>
+        <tbody>
+        {% for row in data %}
+            <tr>
+            {% for cell in row %}
+                <td>{{ cell }}</td>
+            {% endfor %}
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
