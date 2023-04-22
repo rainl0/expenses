@@ -11,7 +11,7 @@
     <p>Net: {{ net }}</p>
 
 <h2>Add payment</h2>
-    <form method="post">
+    <form method="post" action="/account/">
         {% csrf_token %}
         {{ form.as_p }}
         <button type="submit">Confirm</button>
