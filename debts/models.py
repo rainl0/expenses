@@ -7,6 +7,3 @@ class Money(models.Model):
     sum = models.PositiveIntegerField()
     date = models.DateTimeField("date sent")
     note = models.CharField(max_length = 240)
-
-    class Meta:
-        permissions = (("add payment", "add a new payment and edit its data, except the payer"),)
