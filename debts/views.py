@@ -6,7 +6,6 @@ from django.template import loader
 from django.contrib.auth import login, get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-
 from debts.forms import NewUserForm, PaymentForm
 from .models import Money
 
@@ -14,28 +13,30 @@ def main(request):
     model = Money
     field_names = [f.name for f in model._meta.get_fields()]
     field_names.remove('id')
+    
+	#get model data
     data = [[getattr(ins, name) for name in field_names]
             for ins in model.objects.prefetch_related().all()]
     return render(request, 'main.html', {'field_names': field_names, 'data': data})
 
 def register_request(request):
 	form = NewUserForm()
+
+	#handle register form post
 	if request.method == "POST":
 		form = NewUserForm(request.POST)
 		if form.is_valid():
 			user = form.save()
 			login(request, user)
-			messages.success(request, "Registration successful." )
-			return redirect("account/")
-		messages.error(request, "Unsuccessful registration. Invalid information.")
-	message = messages.get_messages(request)
-	return render(request=request, template_name="registration/register.html", context={"form":form, "messages": message})
+			return redirect("/account/")
+	return render(request=request, template_name="registration/register.html", context={"form":form})
 
 @login_required
 def accountView(request):
 	form = PaymentForm()
 	model = Money
 
+	#handle payment form post
 	if request.method == "POST":
 		form = PaymentForm(request.POST)
 		if form.is_valid():
@@ -43,7 +44,6 @@ def accountView(request):
 			payment.payer = request.user.username
 			payment.date = datetime.datetime.now()
 			payment.save()
-			messages.success(request, "Success!")
 			return redirect("/")
 	
     #find amount of money owed, received and net

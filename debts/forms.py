@@ -11,20 +11,7 @@ class NewUserForm(UserCreationForm):
         model = User
         fields = ("username", "email", "password1", "password2")
 
-    # def save(self, commit=True):
-    #     user = super(NewUserForm, self).save(commit=False)
-    #     user.email = self.cleaned_data['email']
-    #     if commit:
-    #         user.save()
-    #     return user
-
 class PaymentForm(forms.ModelForm):
-    # payer = forms.CharField()
-    # payee = forms.CharField(required=True, max_length=100)
-    # sum = forms.IntegerField(required=True)
-    # note = forms.CharField(required=False, max_length=240)
-    # date = forms.DateTimeField()
-
     class Meta:
         model = Money
         fields = ['payee', 'sum', 'note']
